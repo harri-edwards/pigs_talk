@@ -24,11 +24,46 @@ revealConfig.transition='linear';
 * You have a target distribution $T$ known through samples $t_1, \dots, t_N$.
 * Task is to learn a transformation $f_{\theta}: \mathcal{S} \to \mathcal{T}$ such that $f_{\theta}(S) \sim T$.
 
+
 ## Why is this a hard problem?
 
-## The Adversarial Solution
-In "Generative Adversarial Networks" ([@gen_adv])
 
+~Begin Vertical
+## The Adversarial Solution
+
+In "Generative Adversarial Networks" ([@gen_adv]) they propose a novel solution: 
+
+train an adversary $D_{\phi}(x)$ to tell
+the difference between `fake' generated samples and true data samples, and train the generator
+$f_{\theta}(s)$ to fool the adversary.
+
+## Training the adversary
+The adversary is trained to minmise the standard log-loss on the mixture distribution $M$ where true
+and fake examples are equally likely
+~Equation
+L(\theta, \phi) = - \mathbb{E}_S \log D_{\phi}(S)  - \mathbb{E}_T \log \left (1-D_{\phi}(T) \right )
+~
+and assuming sufficient capacity, this is minimised in $\phi$ when
+~Equation
+D_{\phi}(x) = \frac{p_{\phi}(x)}{p_\phi(x) + p_T(x)}
+~
+
+##Training the generator
+When train the generator $f_{\theta}$ to maximise the loss of the adversary we get a maximin problem
+~Equation
+\max_{\theta} \min_{\phi} L(\theta, \phi)
+~
+
+~Equation
+\min_{\theta} \mathbb{E}_S  \log \left (\frac{p_{\phi}(x)}{p_\phi(x) + p_T(x)} \right) + \mathbb{E}_T \log \left(1-\frac{p_{\phi}(x)}{p_\phi(x) + p_T(x)} \right)
+~
+
+~Equation
+\min_{\theta}  D_{KL}(f_{\theta}(S) || M) + D_{KL}(M || f_{\theta}(S)) + C
+~
+and this is minimised in $\theta$ when $M \sim T \sim f_{\theta}(S)$
+
+~End Vertical
 
 ## Bayesian Neural Networks
 
