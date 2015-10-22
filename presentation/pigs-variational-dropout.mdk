@@ -1,10 +1,6 @@
 [INCLUDE=presentation]
-Title         : Variational Dropout and the Local Reparameterization Trick
-Sub Title     : PIGS review of the paper by Kingma and Welling
-Author        : Gavin Gray
-Author Note   : Supervisors: Amos Storkey and D.K. Arvind
-Affiliation   : University of Edinburgh
-Email         : g.d.b.gray@sms.ed.ac.uk
+Title         : Deep Generative Image Models using a Laplacian Pyramid of Adversarial Networks
+
 
 Reveal Theme  : solarized
 Beamer Theme  : singapore
@@ -24,18 +20,7 @@ revealConfig.transition='linear';
 
 # Context
 
-~~ Notes
-The ideas in this paper are a relatively simple extension of the ideas used
-in the Variational Autoencoder paper by the same authors, which itself uses
-an old technique which they call the reparameterization trick. But, why
-bother doing this at all? Why might we want a prior on the weights of our
-neural network? And why do it like this?
 
-To answer that we're going to have to look a little bit into the history of
-Bayesian neural networks, and the motivations. Along with that, we'll also
-have to cover the variational autoencoder, because everyone here might not
-be familiar with the "reparameterization trick".
-~~
 
 ## Bayesian Neural Networks
 
@@ -47,7 +32,7 @@ The Bayesian approach to neural networks[@neal_bayesian_1995]:
 (The paper we're reviewing doesn't discuss posterior inference).
 
 ~~ Notes
-Naive neural networks impplementation overfit massively without
+Naive neural networks implementation overfit massively without
 regularisation. So, most practical neural nets just tune the regularisation
 against a validation set during development until they get good results;
 and often employ early stopping so the network can't train for long enough
