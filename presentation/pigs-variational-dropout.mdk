@@ -18,8 +18,16 @@ revealConfig.transition='linear';
 
 [TOC]
 
-# Context
+# Turning Noise into Data
 
+* You have a source distribution $S$ from which it is easy to sample.
+* You have a target distribution $T$ known through samples $t_1, \dots, t_N$.
+* Task is to learn a transformation $f_{\theta}: \mathcal{S} \to \mathcal{T}$ such that $f_{\theta}(S) \sim T$.
+
+## Why is this a hard problem?
+
+## The Adversarial Solution
+In "Generative Adversarial Networks" ([@gen_adv])
 
 
 ## Bayesian Neural Networks
@@ -31,19 +39,7 @@ The Bayesian approach to neural networks[@neal_bayesian_1995]:
 
 (The paper we're reviewing doesn't discuss posterior inference).
 
-~~ Notes
-Naive neural networks implementation overfit massively without
-regularisation. So, most practical neural nets just tune the regularisation
-against a validation set during development until they get good results;
-and often employ early stopping so the network can't train for long enough
-to overfit.
 
-The first practical part of using a Bayesian prior on our weights is that
-we might be able to avoid overfitting; if we have a good prior on our
-weights. Another advantage to a Bayesian approach is that we'll be able to
-estimate our uncertainty over predictions, which can be useful in many
-tasks (e.g. regression).
-~~
 
 ## Latent Variables
 
