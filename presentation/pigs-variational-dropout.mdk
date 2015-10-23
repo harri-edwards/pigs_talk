@@ -66,92 +66,51 @@ and this is minimised in $\theta$ when $M \sim T \sim f_{\theta}(S)$
 
 ~End Vertical
 
-## Simple Example
+~Begin Vertical
+## A Simple Example
 
-The Bayesian approach to neural networks[@neal_bayesian_1995]:
+[init_example]: images/init.png
+![init_example]
 
-* A prior distribution over model parameters.
-* Posterior inference over predictions.
+We want to make the red samples look like the blue samples.
 
-(The paper we're reviewing doesn't discuss posterior inference).
+#Herding the Reds
+<iframe width="700" height="400" src="https://www.youtube.com/embed/CILzNj2MP3s" frameborder="0" allowfullscreen></iframe>
+~End Vertical
 
+## A more general view
 
+You learn a representation $H$ that is independent
+of a binary variable $I$, this can be extended in various ways:
 
-## Latent Variables
+* Conditional Generative Models
+* Domain Adaptation
+* Fairness
+* ICA
 
-How to deal with this latent variable problem?
-
-* Expectation Maximisation
-* Sampling [@neal_bayesian_1995]
-* Variational Inference [@hernandez-lobato_probabilistic_2015]
-
-~~ Notes
-Unfortunately, we can't then observe any of these random variables, and now
-we have one for every parameter in our neural network. This presents a
-difficult latent variable problem. If we open up our ML textbook on latent
-variable problems we'll see these options for how to deal with the problem.
-
-Expectation maximisation is preferred in most simple latent variable
-problems. In neural networks this means trading away our stochastic
-gradient algorithms for closed form updates on the expectation and
-maximisation passes; if we could derive the updates. There aren't many
-papers that have attempted this, and I'm not that familiar with them so I
-won't say anything else.
-
-Sampling has had a little more success. Back in 1995 Radford Neal used HMC
-to train Bayesian neural networks, complete with a complex ARD prior. This
-worked well in the NIPS feature selection challenge. The only problem is
-this doesn't scale up, and neural networks are traditionally useful on
-massive datasets.
-
-Variational inference is the most recent of these methods, and with a
-relatively large amount of success. Alex Graves used it to train a Bayesian
-neural network on various small datasets in 2011. However, this was still
-more expensive than existing methods, without a huge gain in the potential
-to reduce overfitting. More recent papers have focused on the same problem,
-using similar methods that may be more efficient.
-
-So this paper wants to solve the same problem, but they want it to be
-incredibly cheap and scalable. Preferably just the same as a neural network
-with dropout.
-~~
-
-## Motivation
+## Iterative Approaches to Generating Images
 
 To make this explicit, the motivations of this paper were:
 
-* To reduce variance on SGVB estimators
-* To make Bayesian neural networks practical
+* "DRAW"
+* "Deep Generative Image Models Using A Laplacian Pyramid of Adversarial Networks"
 
-~~ Notes
-The first of these goals is tied to the second. Their aim here is to make
-it very cheap to apply a variational inference procedure over the weights
-in your network; and in order to do this they exploit the link between
-uncertainty in weights and noise on hidden units (from Wang). This lets
-them give a principled interpretation of dropout and parameterize the
-uncertainty in the weights in terms of dropout variables that are part of
-the variational distribution.
 
-Then, we get a neural network that shouldn't overfit, and that we can still
-use all of our stochastic gradient methods that we know and love. And, we
-even get estimates of uncertainty over our weights and predictions; pretty
-much for free.
-~~
 
 ~ Begin Vertical
 
-# Variational Autoencoders
+# Multiscale Decompositions of Images
+A _Laplacian Pyramid_ is a multiscale representation of an image. 
 
-~~ Notes
-So I've probably mentioned the reparameterization trick by now (probably by
-accident) and you might not have heard the term yet. This work draws
-heavily on the paper about Variational Autoencoders by the same authors. In
-it, they show how to make variatonal autoencoders practical by exploiting
-this trick. Unfortunately, to explain it I also have to explain variational
-autoencoders. So, I'm going to just repeat part of the talk I gave two
-weeks ago, which itself is based on the talk given by Aaron Courville at
-the Deep Learning Summer School this year.
-~~
+#Gaussian Pyramid
+We start with the initial image $I_0$ and
+iteratively apply a blurring and downsampling function $d$ to give $I_{k+1} = d(I_k)$. The Gaussian Pyramid is
+the sequence $[I_0, \dots, I_{n}]$.
+[pyramid]: images/Image_pyramid.svg.png
+![pyramid]
+
+
+~End Vertical
 
 ## Directed versus Undirected
 
