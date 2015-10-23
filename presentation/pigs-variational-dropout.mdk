@@ -32,10 +32,11 @@ revealConfig.transition='linear';
 ## The Adversarial Solution
 
 In "Generative Adversarial Networks" ([@gen_adv]) they propose a novel solution: 
-
-train an adversary $D_{\phi}(x)$ to tell
+~ Begin Framed
+Train an adversary $D_{\phi}(x)$ to tell
 the difference between `fake' generated samples and true data samples, and train the generator
 $f_{\theta}(s)$ to fool the adversary.
+~ End Framed
 
 ## Training the adversary
 The adversary is trained to minmise the standard log-loss on the mixture distribution $M$ where true
@@ -65,7 +66,7 @@ and this is minimised in $\theta$ when $M \sim T \sim f_{\theta}(S)$
 
 ~End Vertical
 
-## Bayesian Neural Networks
+## Simple Example
 
 The Bayesian approach to neural networks[@neal_bayesian_1995]:
 
