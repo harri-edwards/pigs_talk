@@ -74,11 +74,12 @@ and this is minimised in $\theta$ when $M \sim T \sim f_{\theta}(S)$
 
 We want to make the red samples look like the blue samples.
 
-#Herding the Reds
+##Herding the Reds
 <iframe width="700" height="400" src="https://www.youtube.com/embed/CILzNj2MP3s" frameborder="0" allowfullscreen></iframe>
+
 ~End Vertical
 
-## A more general view
+# A more general view
 
 You learn a representation $H$ that is independent
 of a binary variable $I$, this can be extended in various ways:
@@ -88,7 +89,7 @@ of a binary variable $I$, this can be extended in various ways:
 * Fairness
 * ICA
 
-## Iterative Approaches to Generating Images
+# Iterative Approaches to Generating Images
 
 To make this explicit, the motivations of this paper were:
 
@@ -97,447 +98,29 @@ To make this explicit, the motivations of this paper were:
 
 
 
-~ Begin Vertical
+~Begin Vertical
+## Multiscale Decompositions of Images
+A _Pyramid_ is a multiscale representation of an image or signal. 
 
-# Multiscale Decompositions of Images
-A _Laplacian Pyramid_ is a multiscale representation of an image. 
-
-#Gaussian Pyramid
+##Gaussian Pyramid
 We start with the initial image $I_0$ and
 iteratively apply a blurring and downsampling function $d$ to give $I_{k+1} = d(I_k)$. The Gaussian Pyramid is
 the sequence $[I_0, \dots, I_{n}]$.
 [pyramid]: images/Image_pyramid.svg.png
 ![pyramid]
 
+##Laplacian Pyramid
+We want to represent the information that is unique to a particular scale. We define a function $u$
+that does the opposite to $d$ - it upsamples and smoothes the image. Then define $h_k = I_{k} - u(I_{k+1})$ with 
+$h_{n}=I_{n}$.
+The sequence $[h_0, \dots, h_n]$ is called a _Laplacian Pyramid_.
+
+[laplacian_pyramid]: images/laplacian_pyramid.jpg
+![laplacian_pyramid]
 
 ~End Vertical
 
-## Directed versus Undirected
 
-~ Begin Columns
-~ Column
-![rbm]
-~
-~ Column
-![vae]
-~
-~ End Columns
-
-~~ Notes
-Don't we already have generative neural networks? We can stack restricted
-Boltzmann machines. True, but that has to be trained by sampling and is
-inherently noisy. Also, an undirected model doesn't give you much control
-over exactly _what_ the latent variables encode.
-
-The difference is that we'd like a directed graphical model versus the
-undirected produced by an RBM, where we have layers of random variables
-all the way up. With a variational autoencoder, our random variables are
-just the data and the top representation, with the neural network producing
-the data through a transformation of the latent variables.
-
-The big difficulty here is how to train this model though, we have to deal
-with all of these latent variables, which has typically been a big problem.
-~~
-
-[rbm]: images/rbm.png { width=auto max-width=70% }
-[vae]: images/vae.png { width=auto max-width=70% }
-
-## Encoding and Decoding
-
-Use a parameterized variational distribution $q_{\phi}(z|x)$:
-
-~ Equation
-\mathcal{L}(\theta, \phi, x) = \langle \log p_{\theta}(x,z) - \log
-q_{\phi}(z | x) \rangle_{q_{\phi}(z|x)}
-~
-
-~~ Notes
-So we have a latent variable problem, and if we've ever opened a textbook
-we know that our options are: MCMC, expectation maximisation or variational
-methods. Sampling is very costly and difficult so we look at variational
-methods. But simple mean-field assumptions don't yield nice solutions.
-
-Well, what if we solve our problem with another neural network? We can
-define our variational distribution as a simple distribution, but
-parameterized with an _encoder network_. This is a little weird, because
-now we're doing parametric variational inference, which is different to the
-normal variational inference method.
-~~ 
-
-~ Slide
-
-@courvilledlss2015:
-
-![vae_coding]
-
-[vae_coding]: images/courville_vae.png { width=auto max-width=70% }
-~
-
-## The Reparameterization Trick
-
-Pick a simple form for the variational distribution:
-
-~ Equation
-q_{\phi} (z|x) = \mathcal{N} (z; \mu_{z}(x), \sigma(x))
-~
-
-Then parameterize $z$ by taking advantage of this:
-
-~ Equation
-z = \mu_{z}(x) + \sigma_{z}(x)\epsilon_{z}
-~
-
-~ Equation
-\epsilon_z \sim \mathcal{N}(0,1)
-~
-
-~~ Notes
-Unfortunately, these are going to be hard to train, unless we can employ
-backprop, and how can we apply backprop through a random variable? Well,
-it turns out that's not a problem. We can reparameterize our objective so
-that it is differentiable in terms of both the parameters of our decoding
-and encoding functions.
-
-In this case we just take advantage of the properties of the normal
-distribution, the same way everyone does when sampling normally distributed
-random variables on a computer. It's actually a very old and simple trick,
-and there are other names for it in other fields.
-~~
-
-~ Slide
-
-@courvilledlss2015:
-
-![courville_backprop]
-
-~
-
-[courville_backprop]: images/courville_backprop.png { width=auto max-width=70% }
-
-~ End Vertical
-
-~ Begin Vertical
-
-# SGVB with a Weight Prior
-
-## The Model
-
-~ Begin Columns
-~ Column
-![plates]
-~
-~ Column
-![varplates]
-~
-~ End Columns
-
-~~ Notes
-Always worth having some plate notation when describing a model. The
-difference between a variational autoencoder and this model is that the
-latent variable is outside the plate.
-
-Now, next to it we have the variational distribution that we want to use.
-We assume it has some parameters that, once we optimise them we'll have a
-posterior distribution over our hidden variables. It's this variational
-distribution that we're going to apply the reparameterization trick to.
-~~
-
-[plates]: images/plates.png { width=auto max-width=70% }
-[varplates]: images/varplates.png { width=auto max-width=70% }
-
-## Variational Lower Bound
-
-~ Equation
-\mathcal{L}(\phi) = - D_{KL}(q_{\phi}(\mathbf{w})||p(\mathbf{w})) + L_{\mathcal{D}}(\phi)
-~
-
-~ Equation
-L_{\mathcal{D}}(\phi) = \sum_{(\mathbf{x}, \mathbf{y}) \in \mathcal{D}} \mathbb{E}_{q_{\phi}(\mathbf{w})} \left[ \log p(\mathbf{y}| \mathbf{x}, \mathbf{w} ) \right]
-~
-
-~~ Notes
-This is what we optimise these variational parameters, and the parameters
-of our model with respect to. Where theta are the parameters of our
-model and phi are the parameters of the variational distribution. I'm not
-going to cover how it's derived here.
-
-The expectation is obviously impractical to start with, because we'd have
-to integrate over all of our parameters. We're also going to assume that we
-can deal with the KL divergence term analytically (and it turns out that we
-can).
-~~
-
-## Stochastic Gradient Variational Bayes
-
-~ Equation
-L_{\mathcal{D}} \simeq L_{\mathcal{D}}^{SGVB}(\phi) = \frac{N}{M} \sum_{m=1}^{M} \log p(\mathbf{y}^{m} | \mathbf{x}^{m}, \mathbf{w}=f(\epsilon, \phi))
-~
-
-
-~~ Notes
-We want an objective we can differentiate wrt to both theta and phi. The
-simplest one that is an unbiased estimator of the objective is to use Monte
-Carlo. Unfortunately, if we were able to just draw samples from w using our
-parameters how would we take derivatives wrt it's parameters? Well, we make
-sure that the noise being added is parameterised such that we can take
-derivatives wrt phi.
-~~
-
-## Variance Reduction
-
-![varderiv]
-
-[varderiv]: images/varderiv.png
-
-~~ Notes
-This variance derivation is a little painful, and it would be nice if we
-had some intermediate steps in an appendix. The result of it is that the 
-variance of our estimator is proportional to the covariance between the
-objective on different examples in our minibatch. If we only sample the
-noise term once for all examples in our minibatch this is probably going to
-be positive (especially in the final layer). And, it doesn't matter if we
-increase the minibatch size; we're still going to have this problem.
-
-So, we want to make sure that the covariance between these examples is
-zero. It'll be zero if they're independent samples. So, why not just sample
-a new weight matrix for each of the examples? That's too expensive. This is
-the part of the paper where the dropout influence arises.
-~~
-
-## Wang's Dropout
-
-From @wang_fast_2013:
-
-![wang_dropout]
-
-[wang_dropout]: images/wang_dropout.png { width=auto max-width=50% }
-
-~~ Notes
-Wang's paper in 2013 is all about projecting dropout forward: from hidden
-units to later hidden units mainly, but they also mention how we can
-interpret a uncertainty on the weights as noise on the weights and therefore
-noise on the hidden units. As all of this noise is Gaussian and the sum of
-Gaussian random variables is also Gaussian we can treat the noise on the
-units as a Gaussian random variable dependent on the weights.
-
-Then, we just need to reparameterize this distribution over the units and
-we can draw samples and backpropagate with impunity.
-
-It is probably worth explaining this with A, B and W on the board at this
-point, using the example in the paper.
-~~
-
-## Activation Distribution
-
-![actform]
-
-[actform]: images/actform.png { width=auto max-width=70% }
-
-~~ Notes
-So we end up with this form for the distribution over activations, and we
-can sample from this in a reparameterized way as it's Gaussian. 
-~~
-
-~ End Vertical
-
-~ Begin Vertical
-
-# Variational Dropout
-
-~~ Notes
-Now we're pretty much done, and the paper seems to have started running out
-of space because the rest seems a bit rushed (and leaves out some things we
-might like to see).
-
-The paper presents two different forms of dropout; and links each to two
-different forms of Gaussian dropout that are presented in two earlier
-papers. This has been problematic in my experiments because there are some
-ambiguities as to the differences between the two. I've already described
-one of these above, and that corresponds to the independent weight noise
-version.
-~~
-
-## Independent Weight Noise
-
-![indep]
-
-[indep]: images/indep.png { width=auto max-width=70% }
-
-~~ Notes
-This is essentially the Gaussian dropout described in Wang's paper, which
-applies a Gaussian noise to the activation prior to the nonlinearity in a
-network, with the noise being parameterized here by alpha. This only
-describes the case for a layer-wise alpha, and not one for each weight or
-unit; which are also possible, as they describe later.
-~~
-
-## Correlated Weight Noise
-
-![correlated]
-
-[correlated]: images/correlated.png { width=auto max-width=70% }
-
-~~ Notes
-In this case, each row of the weight matrix sees the same noise on any
-given input example, which is a little difficult to reconcile with the
-example given in the local reparameterization section. And this notation
-they've given is strange, does this mean we just add noise to the input to
-a layer, like the first equation would suggest? And then is the
-reparameterization of uncertainty on the weights moving backwards now?
-
-Well, we know that this is supposed to correspond to the Gaussian noise
-added in Srivastava's paper, so what if we look at that?
-~~
-
-## Srivastava's Dropout
-
-From the main dropout paper[@srivastava2014dropout]:
-
-![srivastava]
-
-[srivastava]: images/dropout_diagram.png { width=auto max-width=70% }
-
-~~ Notes
-Srivastava's paper mainly deals with Bernoulli dropout, but there is a
-small section reporting that slightly improved results are possible by
-adding Gaussian noise as well. It says that Gaussian noise was added to the
-activations, distributed as in the previous slide, using the Bernoulli
-variance. This is problematic, because activations can refer to before or
-after the nonlinearity; and if before this corresponds to the same thing as
-Wang's Gaussian dropout. In my implementation, I've assumed that we're
-dealing with _after_ the nonlinearity, so that the two types of dropout
-will at least be different, if not correct, and it's likely this is what
-the paper means.
-~~
-
-## Prior and Variational Objective
-
-~ Equation
-p(\log ( |w_{i,j}|)) \propto c
-~
-
-~ Equation
-- D_{KL} \left[ q_{\phi}(w_{i}) | p(w_{i}) \right] \approx \text{constant} + 0.5 \log (\alpha) + c_{1}\alpha + c_{2}\alpha^{2} + c_{3} \alpha^{3}
-~
-
-~~ Notes
-OK, we're almost there and ready to start learning the parameters of our
-model and variational distribution. We just have to deal with this annoying
-KL term that we said we didn't have to worry about before.
-
-It's important that this KL term be independent of the parameters of the
-network. I'm not sure why this is right now. 
-
-It turns out the prior distribution they derive is analogous to a uniform
-distribution over floating point numbers, and the KL divergence regularises
-the number of significant digits required to store the number.
-
-Anyway, they derive this polynomial approximation that's presumably
-accurate enough to work with, and now we've got everything we need to learn
-the parameters of our model and our variational distribution, which means
-being able to learn the dropout parameters as well.
-~~
-
-~ End Vertical
-
-# Results and Replication
-
-~~ Notes
-The results reported are very short, just a table showing that the
-derivation about the variance still plays out the same in practice and a
-graph showing better performance than Bernoulli or Gaussian dropout on
-MNIST. They also show that it's much faster than drawing a separate weight
-matrix for each example, but I don't think anyone really doubted that.
-
-I've put their results next to the results from my attempt at replication,
-but I don't think my replication is valid yet. There are probably bugs in
-my implementation, or in my experiments. I've just included for comparison
-and discussion.
-~~
-
-## Table 1
-
-
-![table1]
-
-![repltable1]
-
-
-[table1]: images/table1.png { width=auto max-width=70% }
-[repltable1]: images/repltable1.png { width=auto max-width=50% }
-
-~~ Notes
-Table 1 just verifies section 3.2 experimentally. They have simply trained
-a network for either 10 or 100 epochs and then looked at the variance on
-the gradients with respect to any of the parameters over the entire
-training set.
-
-My implementation doesn't quite reproduce this, and it could be due to
-either: bugs in the variational dropout implementation, rescaling of the
-noise to match the local reparameterization could be wrong, or any other
-suggestions?
-~~
-
-## Figure 1
-
-~ Begin Columns
-
-~ Column
-![figure1a]
-![figure1b]
-~
-~ Column
-![replfigure1a]
-![replfigure1b]
-~
-~ End Columns
-
-[figure1a]: images/figure1a.png { width=300px }
-[figure1b]: images/figure1b.png { width=300px }
-[replfigure1a]: images/replfigure1a.png { width=300px }
-[replfigure1b]: images/replfigure1b.png { width=300px }
-
-## Extra Replication Results
-
-![alpha_training]
-
-[alpha_training]: images/alpha_training.png { width=auto max-width=70% }
-
-~~ Notes
-We see that the variance of the alphas in this layer increases, which
-means that some of the alphas must be higher, because the network doesn't
-really care about those activations. Graphing these for the input layer to
-visualise what the network has learnt about the importance of pixels.
-~~
-
-~ Slide
-
-![alpha_image]
-
-[alpha_image]: images/alpha_image.png { width=auto max-width=70% }
-
-~
-
-## Extensions
-
-Possible extensions:
-
-* Bayesian encoders and decoders
-* Alternative latent variable neural networks
-* Suggestions?
-
-~~ Notes
-The paper doesn't discuss possible extensions, but it seems like there must
-be quite a few. The most obvious is to tie these back into variational
-autoencoders and use the uncertainty estimates on the output of these to
-define the variance of your hidden representation in an autoencoder.
-
-This also means we can explore some horribly parameterised latent variable
-models involving neural networks that would previously have been very
-difficult to deal with, such as the ARD model. There are probably a variety
-of models such as this, and integrating Bayesian models with neural
-networks is becoming a bit of trend.
-~~
 
 ## Bibliography {-}
 
