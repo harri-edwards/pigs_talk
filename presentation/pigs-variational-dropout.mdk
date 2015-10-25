@@ -132,7 +132,7 @@ See [blog](http://soumith.ch/eyescream/).
 ##Other Generative Models
 In NADE we use the generic chain rule
 ~Begin Equation 
-p(x,y,z) = p(x |y,z) \cdot p(y| z) \cdot p(z)
+p(x_1, \dots, x_k) = p(x_1 |x_2, \dots, x_k) \cdot p(x_2| x_3, \dots, x_k ) \cdot \, \dots \, \cdot p(x_k)
 ~End Equation
 if you write 
 
