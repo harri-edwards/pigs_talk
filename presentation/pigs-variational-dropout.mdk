@@ -46,11 +46,11 @@ L(\theta, \phi) = - \mathbb{E}_S \log D_{\phi}(S)  - \mathbb{E}_T \log \left (1-
 ~
 and assuming sufficient capacity, this is minimised in $\phi$ when
 ~Equation
-D_{\phi}(x) = \frac{p_{\phi}(x)}{p_\phi(x) + p_T(x)}
+D_{\phi}(x) = \frac{p_{\theta}(x)}{p_\theta(x) + p_T(x)}
 ~
 
 ##Training the generator
-When train the generator $f_{\theta}$ to maximise the loss of the adversary we get a maximin problem
+If we train the generator $f_{\theta}$ to maximise the loss of the adversary we get a maximin problem
 ~Equation
 \max_{\theta} \min_{\phi} L(\theta, \phi)
 ~
@@ -62,7 +62,7 @@ When train the generator $f_{\theta}$ to maximise the loss of the adversary we g
 ~Equation
 \min_{\theta}  D_{KL}(f_{\theta}(S) || M) + D_{KL}(M || f_{\theta}(S)) + C
 ~
-and this is minimised in $\theta$ when $M \sim T \sim f_{\theta}(S)$
+
 
 ~End Vertical
 
@@ -111,7 +111,7 @@ the sequence $[I_0, \dots, I_{n}]$.
 
 ##Laplacian Pyramid
 We want to represent the information that is unique to a particular scale. We define a function $u$
-that does the opposite to $d$ - it upsamples and smoothes the image. Then define $h_k = I_{k} - u(I_{k+1})$ with 
+that does the opposite to $d$ - it upsamples and smoothes the image. Then define $h_k =I_k - u(I_{k+1})$ with 
 $h_{n}=I_{n}$.
 The sequence $[h_0, \dots, h_n]$ is called a _Laplacian Pyramid_.
 
@@ -120,7 +120,32 @@ The sequence $[h_0, \dots, h_n]$ is called a _Laplacian Pyramid_.
 
 ~End Vertical
 
+## Generative Models for the Laplacian Pyramid
+* Build a generative model for $h_n = I_n$ using a standard generative adversarial network.
+* For k < n, build a conditional generative network for $h_k | l_k$, where $l_k = u(I_{k+1})$.
+* Each step is trained independently.
 
+##Results
+
+See [blog](http://soumith.ch/eyescream/).
+
+##Other Generative Models
+In NADE we use the generic chain rule
+~Begin Equation 
+p(x,y,z) = p(x |y,z) \cdot p(y| z) \cdot p(z)
+~End Equation
+if you write 
+
+~Begin Equation 
+u(x_1, \dots, x_k) = (0, x_1, \dots, x_k)
+~End Equation
+ and 
+ ~Begin Equation 
+ d(x_1, \dots x_k) = (x_2, \dots, x_k),
+ ~End Equation
+
+then 
+NADE = LAPGAN + weight sharing (modulo choices of $u,d$).
 
 ## Bibliography {-}
 
