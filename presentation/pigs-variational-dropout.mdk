@@ -85,13 +85,12 @@ You learn a representation $H$ that is independent
 of a binary variable $I$, this can be extended in various ways:
 
 * Conditional Generative Models
-* Domain Adaptation
+* Domain Adaptation [@domain_adapt]
 * Fairness
 * ICA
 
 # Iterative Approaches to Generating Images
 
-To make this explicit, the motivations of this paper were:
 
 * "DRAW"
 * "Deep Generative Image Models Using A Laplacian Pyramid of Adversarial Networks"
