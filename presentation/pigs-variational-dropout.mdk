@@ -129,7 +129,7 @@ The sequence $[h_0, \dots, h_n]$ is called a _Laplacian Pyramid_.
 See [blog](http://soumith.ch/eyescream/).
 
 ##Other Generative Models
-In NADE we use the generic chain rule
+In NADE[@NADE] they use the generic chain rule
 ~Begin Equation 
 p(x_1, \dots, x_k) = p(x_1 |x_2, \dots, x_k) \cdot p(x_2| x_3, \dots, x_k ) \cdot \, \dots \, \cdot p(x_k)
 ~End Equation
@@ -142,9 +142,6 @@ u(x_1, \dots, x_k) = (0, x_1, \dots, x_k)
  ~Begin Equation 
  d(x_1, \dots x_k) = (x_2, \dots, x_k),
  ~End Equation
-
-then 
-NADE = LAPGAN + weight sharing (modulo choices of $u,d$).
 
 ## Bibliography {-}
 
